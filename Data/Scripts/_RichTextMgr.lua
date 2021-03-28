@@ -69,8 +69,8 @@ function API.DisplayText(panel, text, options)
     baseFont = baseFont,
     baseSize = baseSize,
     baseColor = options.color or Color.WHITE,
-    currentFont = options.font or "",
-    currentSize = options.size or "",
+    currentFont = baseFont,
+    currentSize = baseSize,
     currentColor = options.color or Color.WHITE,
     currentLineHeight = 0,
     leftMargin = options.leftMargin or 0,
@@ -246,6 +246,24 @@ function RenderGlyph(letter, textData,  panel, xOffset)
 
   return glyphList, newXOffset
 end
+
+
+function TextAnimatorTask()
+  while true do
+    local expiredEntries = {}
+    for textField,data in pairs(textToAnimate) do
+      if Object.IsValid(textField) then
+
+
+      else
+        textToAnimate[k] = nil
+      end
+    end
+
+    Task.Wait()
+  end
+end
+
 
 
 return API
