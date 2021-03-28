@@ -17,6 +17,15 @@ Assets {
   }
 }
 Assets {
+  Id: 13566023529808324571
+  Name: "Survival First Aid 002"
+  PlatformAssetType: 9
+  PrimaryAsset {
+    AssetType: "PlatformBrushAssetRef"
+    AssetId: "UI_Survival_Equip_FirstAid_002"
+  }
+}
+Assets {
   Id: 12095835209017042614
   Name: "Cube"
   PlatformAssetType: 1

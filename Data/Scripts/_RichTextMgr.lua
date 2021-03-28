@@ -1,6 +1,7 @@
+local prop_FontLookup = script:GetCustomProperty("_FontLookup")
 local propGlyphCheckTemplate = script:GetCustomProperty("GlyphCheckTemplate")
 local propGlyphTemplate = script:GetCustomProperty("GlyphTemplate")
-local prop_FontLookup = script:GetCustomProperty("_FontLookup")
+local propEmbeddedImageTemplate = script:GetCustomProperty("EmbeddedImageTemplate")
 
 local fonts = require(prop_FontLookup)
 
@@ -56,8 +57,6 @@ function API.DisplayText(panel, text, options)
   local maxX = panel.width - (options.rightMargin or 0)
   local maxY = panel.height
 
-  local currentWord = {}
-  local currentWordLength = 0
 
   local baseFont = fonts.GetFontMUID(options.font)
   if baseFont == nil then
@@ -66,6 +65,11 @@ function API.DisplayText(panel, text, options)
   local baseSize = options.size or 30
 
   local textData = {
+    targetPanel = panel,
+    maxX = maxX,
+    maxY = maxY,
+    currentWord = {},
+    currentWordLength = 0,
     baseFont = baseFont,
     baseSize = baseSize,
     baseColor = options.color or Color.WHITE,
@@ -87,30 +91,7 @@ function API.DisplayText(panel, text, options)
 
   for c in basicText:gmatch(".") do
     if c == " " or c == "\n" then
-      -- we got a space.  Figure out if the current word
-      -- fits on the line; otherwise move to the next line.
-
-      local newLine = false
-      if textData.currentX + currentWordLength > maxX then
-        textData.currentX = textData.leftMargin
-        textData.currentY = textData.currentY + textData.currentLineHeight
-        textData.currentLineHeight = 0
-        newLine = true
-      end
-
-      for _,v in pairs(currentWord) do
-        v.x = v.x + textData.currentX
-        v.y = v.y + textData.currentY
-      end
-
-      textData.currentX = textData.currentX + currentWordLength
-      currentWordLength = 0
-      currentWord = {}
-
-      if not newLine then
-        textData.currentX = textData.currentX 
-            + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).x
-      end
+      FlushWord(textData)
 
       if c == "\n" then
         textData.currentX = textData.leftMargin
@@ -119,25 +100,50 @@ function API.DisplayText(panel, text, options)
         end
         textData.currentY = textData.currentY + textData.currentLineHeight
         textData.currentLineHeight = 0
-      end
-      if newLine then
+      else
         textData.currentX = textData.currentX 
             + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).x
       end
-
     elseif c == subChar then
       HandleControlCode(textData)
     else
       -- regular letter.  Add to the current word.
-      local glyphList, newXOffset = RenderGlyph(c, textData, panel, currentWordLength)
-      currentWordLength = newXOffset
-      for k,v in pairs(glyphList) do
-        table.insert(currentWord, v)
-      end
+      RenderGlyph(c, textData, panel)
     end
   end
 
   --print(basicText)
+end
+
+
+-- helper function for flushing words.
+function FlushWord(textData)
+  -- we got a space.  Figure out if the current word
+  -- fits on the line; otherwise move to the next line.
+
+  local newLine = false
+  if textData.currentX + textData.currentWordLength > textData.maxX then
+    textData.currentX = textData.leftMargin
+    textData.currentY = textData.currentY + textData.currentLineHeight
+    textData.currentLineHeight = 0
+    newLine = true
+  end
+
+  for _,v in pairs(textData.currentWord) do
+    v.x = v.x + textData.currentX
+    v.y = v.y + textData.currentY
+  end
+
+  textData.currentX = textData.currentX + textData.currentWordLength
+  textData.currentWordLength = 0
+  textData.currentWord = {}
+
+  if not newLine then
+    textData.currentX = textData.currentX 
+        + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).x
+  end
+
+  return newLine
 end
 
 
@@ -187,19 +193,47 @@ function HandleControlCode(textData)
     textData.shadowColor = args[4] or "BLACK"
   elseif args[1] == "/SHADOW" then
     textData.isShadowed = false
+  elseif args[1] == "IMAGE" then
+    InsertImage(args, textData)
   else
     warn("Unknown text code: " .. args[1])
   end
 end
 
+function InsertImage(args, textData)
+  --FlushWord(textData)
+
+  local imageId = args[2]
+  local width = tonumber(args[3]) or textData.currentLineHeight
+  local height = tonumber(args[4]) or width
+
+  local xOffset = textData.currentWordLength
+  local img = World.SpawnAsset(propEmbeddedImageTemplate, {parent = textData.targetPanel})
+
+  img.x = textData.offsetX + xOffset
+  img.y = textData.offsetY
+
+  img.width = width
+  img.height = height
+
+  img:SetImage(imageId)
+  print(imageId)
+  textData.currentLineHeight = math.max(textData.currentLineHeight, height)
+  textData.currentWordLength = xOffset + width
+
+  table.insert(textData.currentWord, img)
+
+end
+
 
 -- This is a mess.  It really needs a cleanup pass.
-function RenderGlyph(letter, textData,  panel, xOffset)
+function RenderGlyph(letter, textData)
+  local xOffset = textData.currentWordLength
   local glyphSize = API.GetGlyphSize(letter, textData.currentFont, textData.currentSize)
   local glyphList = {}
 
   if textData.isShadowed then
-    local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = panel})
+    local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
     bonusGlyph.x = textData.offsetX + xOffset + textData.shadowOffsetX
     bonusGlyph.y = textData.offsetY + textData.shadowOffsetY
     bonusGlyph.text = letter
@@ -209,7 +243,7 @@ function RenderGlyph(letter, textData,  panel, xOffset)
     table.insert(glyphList, 1, bonusGlyph)
   end
 
-  local glyph = World.SpawnAsset(propGlyphTemplate, {parent = panel})
+  local glyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
   glyph.x = textData.offsetX + xOffset
   glyph.y = textData.offsetY
   glyph.text = letter
@@ -233,7 +267,7 @@ function RenderGlyph(letter, textData,  panel, xOffset)
         Vector2.New( 1,  1),
       }
       for k,v in pairs(offsetList) do
-        local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = panel})
+        local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
         bonusGlyph.x = glyph.x + v.x * textData.boldThickness
         bonusGlyph.y = glyph.y + v.y * textData.boldThickness
         bonusGlyph.text = letter
@@ -244,7 +278,10 @@ function RenderGlyph(letter, textData,  panel, xOffset)
       end
   end
 
-  return glyphList, newXOffset
+  textData.currentWordLength = newXOffset
+  for k,v in pairs(glyphList) do
+    table.insert(textData.currentWord, v)
+  end
 end
 
 
