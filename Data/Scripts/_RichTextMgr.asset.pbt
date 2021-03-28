@@ -16,6 +16,12 @@ Assets {
           Id: 13370720853946996127
         }
       }
+      Overrides {
+        Name: "cs:_FontLookup"
+        AssetReference {
+          Id: 13643454512380846883
+        }
+      }
     }
   }
   SerializationVersion: 78

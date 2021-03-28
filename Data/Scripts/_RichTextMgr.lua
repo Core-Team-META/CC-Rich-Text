@@ -1,12 +1,11 @@
 local propGlyphCheckTemplate = script:GetCustomProperty("GlyphCheckTemplate")
 local propGlyphTemplate = script:GetCustomProperty("GlyphTemplate")
+local prop_FontLookup = script:GetCustomProperty("_FontLookup")
 
-
+local fonts = require(prop_FontLookup)
 
 local API = {}
-
 local allFontData = {}
-
 
 local template = World.SpawnAsset(propGlyphCheckTemplate)
 local sizeCheckTextBox = template:GetCustomProperty("GlyhphSizeChecker"):WaitForObject()
@@ -137,7 +136,11 @@ function HandleControlCode(textData)
   if args[1] == "COLOR" then
     textData.currentColor = Color[args[2]]
   elseif args[1] == "FONT" then
-    textData.currentColor = args[2]
+    textData.currentFont = fonts.GetFontMUID(args[2])
+    if textData.currentFont == nil then
+      print("it was nil. [" .. args[2] .. "]")
+      textData.currentFont = args[2]
+    end
   elseif args[1] == "SIZE" then
     textData.currentSize = args[2]
   elseif args[1] == "OFFSET" then
@@ -223,12 +226,6 @@ function RenderGlyph(letter, textData,  panel, xOffset)
 
   return glyphList, newXOffset
 end
-
-
-
-
-
-
 
 
 return API

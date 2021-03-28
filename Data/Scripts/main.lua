@@ -13,6 +13,7 @@ local rtm = require(prop_RichTextMgr)
 local text = [[
 This text is <b>bold</b>
 This text has a <shadow>drop shadow</shadow>
+<font pirata_one>This text has a font!<font baloo_2>
 <size 60>Big text!
 <size 20> little text!
 <size 40><color red>Red text!<color white>
