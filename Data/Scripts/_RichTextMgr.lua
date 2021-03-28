@@ -138,10 +138,6 @@ function FlushWord(textData)
   textData.currentWordLength = 0
   textData.currentWord = {}
 
-  if not newLine then
-    textData.currentX = textData.currentX 
-        + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).x
-  end
 
   return newLine
 end
