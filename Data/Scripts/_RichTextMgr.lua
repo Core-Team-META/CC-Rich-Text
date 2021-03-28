@@ -40,7 +40,7 @@ function TypefaceKey(font, size)
   return string.upper(string.format("%s:%d", font, size))
 end
 
-function API.DisplayText(panel, text, font, size, options)
+function API.DisplayText(panel, text, options)
   text = text .. "\n"
   if options == nil then options = {} end
   --local subChar = "_"
@@ -59,10 +59,19 @@ function API.DisplayText(panel, text, font, size, options)
   local currentWord = {}
   local currentWordLength = 0
 
+  local baseFont = fonts.GetFontMUID(options.font)
+  if baseFont == nil then
+    baseFont = options.font
+  end
+  local baseSize = options.size or 30
+
   local textData = {
-    currentFont = font,
-    currentSize = size,
-    currentColor = Color.WHITE,
+    baseFont = baseFont,
+    baseSize = baseSize,
+    baseColor = options.color or Color.WHITE,
+    currentFont = options.font or "",
+    currentSize = options.size or "",
+    currentColor = options.color or Color.WHITE,
     currentLineHeight = 0,
     leftMargin = options.leftMargin or 0,
     currentX = options.leftMargin or 0,
@@ -105,9 +114,17 @@ function API.DisplayText(panel, text, font, size, options)
 
       if c == "\n" then
         textData.currentX = textData.leftMargin
+        if textData.currentLineHeight == 0 then
+          textData.currentLineHeight = API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).y
+        end
         textData.currentY = textData.currentY + textData.currentLineHeight
         textData.currentLineHeight = 0
       end
+      if newLine then
+        textData.currentX = textData.currentX 
+            + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).x
+      end
+
     elseif c == subChar then
       HandleControlCode(textData)
     else
@@ -135,14 +152,19 @@ function HandleControlCode(textData)
 
   if args[1] == "COLOR" then
     textData.currentColor = Color[args[2]]
+  elseif args[1] == "/COLOR" then
+    textData.currentColor = textData.baseColor
   elseif args[1] == "FONT" then
     textData.currentFont = fonts.GetFontMUID(args[2])
     if textData.currentFont == nil then
-      print("it was nil. [" .. args[2] .. "]")
       textData.currentFont = args[2]
     end
+  elseif args[1] == "/FONT" then
+    textData.currentFont = textData.baseFont
   elseif args[1] == "SIZE" then
     textData.currentSize = args[2]
+  elseif args[1] == "/SIZE" then
+    textData.currentSize = textData.baseSize
   elseif args[1] == "OFFSET" then
     if args[3] ~= nil then
       textData.offsetX = args[2]
@@ -160,8 +182,8 @@ function HandleControlCode(textData)
     textData.isBold = false
   elseif args[1] == "SHADOW" then
     textData.isShadowed = true
-    textData.shadowOffsetX = args[2] or 2
-    textData.shadowOffsetY = args[3] or 2
+    textData.shadowOffsetX = args[2] or 4
+    textData.shadowOffsetY = args[3] or 4
     textData.shadowColor = args[4] or "BLACK"
   elseif args[1] == "/SHADOW" then
     textData.isShadowed = false
@@ -221,8 +243,6 @@ function RenderGlyph(letter, textData,  panel, xOffset)
         table.insert(glyphList, bonusGlyph)
       end
   end
-
-
 
   return glyphList, newXOffset
 end
