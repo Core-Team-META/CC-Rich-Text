@@ -15,8 +15,8 @@ local text = [[
 <shadow 4 4 blue>shadowed text,</shadow> <b>bold text.</b>
 <color red>C<color orange>r<color yellow>a<color green>z<color cyan>y</color> <offset 2>u<offset -2>n<offset 4>c<offset -1>o<offset 3>n<offset 0>t<offset 3>r<offset -2>o<offset 2>l<offset 4>l<offset -1>e<offset -3>d </offset>text!
 
-Text that goes on veeeeeeeery faaaaaaaar and has to line wrap twice.
-Text that has an image (<image ]] .. propImage .. [[">) which I think is very nice.
+<font pirata_one>Text that goes on veeeeeeeery faaaaaaaar and has to line wrap twice.
+Text that has an image (<image ]] .. propImage .. [[">) which I think is very nice!</font>
 
 ]]
 
