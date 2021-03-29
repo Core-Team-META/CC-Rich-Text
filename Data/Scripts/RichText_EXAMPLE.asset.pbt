@@ -1,6 +1,6 @@
 Assets {
   Id: 5397137188652304228
-  Name: "Main"
+  Name: "RichText_EXAMPLE"
   PlatformAssetType: 3
   TextAsset {
     CustomParameters {

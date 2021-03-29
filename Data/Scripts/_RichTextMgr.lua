@@ -28,9 +28,8 @@ function API.GetGlyphSize(glyph, font, size)
   while dims == nil do
     Task.Wait()
     dims = sizeCheckTextBox:ComputeApproximateSize()
-    print("waiting...")
+    --print("waiting...")
   end
-  --print(glyph, ":", dims, "(New!)")
   dims.x = dims.x / (SAMPLE_SIZE + 0)
   allFontData[fontKey][glyph] = dims
   return dims
@@ -49,7 +48,7 @@ function API.DisplayText(panel, text, options)
 
   local controlCodes = {}
   for a in text:gmatch("<(.-)>") do
-    print("Code:", a)
+    --print("Code:", a)
     table.insert(controlCodes, a)
   end
   local basicText = text:gsub("<.->", subChar)
@@ -197,8 +196,6 @@ function HandleControlCode(textData)
 end
 
 function InsertImage(args, textData)
-  --FlushWord(textData)
-
   local imageId = args[2]
   local width = tonumber(args[3]) or textData.currentLineHeight
   local height = tonumber(args[4]) or width
@@ -213,12 +210,11 @@ function InsertImage(args, textData)
   img.height = height
 
   img:SetImage(imageId)
-  print(imageId)
+  --print(imageId)
   textData.currentLineHeight = math.max(textData.currentLineHeight, height)
   textData.currentWordLength = xOffset + width
 
   table.insert(textData.currentWord, img)
-
 end
 
 

@@ -1,28 +1,10 @@
 Assets {
-  Id: 18255817955350316357
-  Name: "Baloo 2"
-  PlatformAssetType: 28
-  PrimaryAsset {
-    AssetType: "FontAssetRef"
-    AssetId: "Baloo2Regular_ref"
-  }
-}
-Assets {
   Id: 16910278292812118833
   Name: "Sun Light"
   PlatformAssetType: 6
   PrimaryAsset {
     AssetType: "BlueprintAssetRef"
     AssetId: "CORESKY_SunLight"
-  }
-}
-Assets {
-  Id: 13566023529808324571
-  Name: "Survival First Aid 002"
-  PlatformAssetType: 9
-  PrimaryAsset {
-    AssetType: "PlatformBrushAssetRef"
-    AssetId: "UI_Survival_Equip_FirstAid_002"
   }
 }
 Assets {
@@ -50,14 +32,5 @@ Assets {
   PrimaryAsset {
     AssetType: "BlueprintAssetRef"
     AssetId: "CORESKY_Sky"
-  }
-}
-Assets {
-  Id: 7709892068703266799
-  Name: "Frame Outlined 001"
-  PlatformAssetType: 9
-  PrimaryAsset {
-    AssetType: "PlatformBrushAssetRef"
-    AssetId: "FrameSolid4px_020"
   }
 }
