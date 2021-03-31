@@ -30,7 +30,6 @@ function API.GetGlyphSize(glyph, font, size)
   while dims == nil do
     Task.Wait()
     dims = sizeCheckTextBox:ComputeApproximateSize()
-    --print("waiting...")
   end
   dims.x = dims.x / (SAMPLE_SIZE + 0)
   allFontData[fontKey][glyph] = dims
@@ -48,17 +47,17 @@ function API.DisplayText(panel, text, options)
     height = -1,
   }
   if options == nil then options = {} end
-  local subChar = "_"
-  --local subChar = "\a"
+  --local subChar = "_"
+  local subChar = "\a"
 
   local controlCodes = {}
 
   for a in text:gmatch("<(.-)>") do
-    --print("Code:", a)
     table.insert(controlCodes, a)
   end
 
-
+  -- build up a table of the start/end position of every tag, in the
+  -- original raw text.  We need this for recursing with panels.
   local controlIndexes = {}
   local tempText = text
   while true do
@@ -72,7 +71,6 @@ function API.DisplayText(panel, text, options)
 
   local maxX = panel.width - (options.rightMargin or 0)
   local maxY = panel.height
-
 
   local baseFont = fonts.GetFontMUID(options.font)
   if baseFont == nil then
@@ -106,6 +104,7 @@ function API.DisplayText(panel, text, options)
     offsetX = 0,
     offsetY = 0,
     inSubPanel = false,
+    needsNewTextElement = true,
   }
 
 
@@ -113,7 +112,6 @@ function API.DisplayText(panel, text, options)
     if c == " " or c == "\n" then
       if not textData.inSubPanel then
         FlushWord(textData)
-
         if c == "\n" then
           textData.currentX = textData.leftMargin
           if textData.currentLineHeight == 0 then
@@ -139,34 +137,6 @@ function API.DisplayText(panel, text, options)
 
   dimensions.height = textData.currentY + textData.currentLineHeight + options.topMargin
   return dimensions
-  --print(basicText)
-end
-
-
--- helper function for flushing words.
-function FlushWord(textData)
-  -- we got a space.  Figure out if the current word
-  -- fits on the line; otherwise move to the next line.
-  --print("flushing word!")
-
-  local newLine = false
-  if textData.currentX + textData.currentWordLength > textData.maxX then
-    textData.currentX = textData.leftMargin
-    textData.currentY = textData.currentY + textData.currentLineHeight
-    textData.currentLineHeight = 0
-    newLine = true
-  end
-
-  for _,v in pairs(textData.currentWord) do
-    v.x = v.x + textData.currentX
-    v.y = v.y + textData.currentY
-  end
-
-  textData.currentX = textData.currentX + textData.currentWordLength
-  textData.currentWordLength = 0
-  textData.currentWord = {}
-
-  return newLine
 end
 
 
@@ -185,6 +155,8 @@ function HandleControlCode(textData)
       textData.inSubPanel = false
     end
   else
+      textData.needsNewTextElement = true
+
     if args[1] == "COLOR" then
       textData.currentColor = Color[args[2]]
     elseif args[1] == "/COLOR" then
@@ -236,9 +208,34 @@ function HandleControlCode(textData)
 end
 
 
+-- helper function for flushing words.
+function FlushWord(textData)
+  -- we got a space.  Figure out if the current word
+  -- fits on the line; otherwise move to the next line.
+  textData.needsNewTextElement = true
 
+  local newLine = false
+  if textData.currentX + textData.currentWordLength > textData.maxX then
+    textData.currentX = textData.leftMargin
+    textData.currentY = textData.currentY + textData.currentLineHeight
+    textData.currentLineHeight = 0
+    newLine = true
+  end
+
+  for _,v in pairs(textData.currentWord) do
+    v.x = v.x + textData.currentX
+    v.y = v.y + textData.currentY
+  end
+
+  textData.currentX = textData.currentX + textData.currentWordLength
+  textData.currentWordLength = 0
+  textData.currentWord = {}
+
+  return newLine
+end
 
 function InsertPanelStart(args, textData)
+  textData.needsNewTextElement = true
   FlushWord(textData)
 
   --print("inserting new panel...", textData.maxX, textData.currentX)
@@ -257,10 +254,7 @@ function InsertPanelStart(args, textData)
   newPanel.y = textData.offsetY
 
   newPanel.width = width
-  print(width)
   local remainingText = textData.rawText:sub(textData.controlIndexes[textData.codeIndex - 1].matchEnd + 1)
-  print(textData.rawText)
-  --print("remaining text: [" .. remainingText .. "]")
 
   local renderData = API.DisplayText(newPanel, remainingText, textData.options)
   newPanel.height = renderData.height
@@ -277,6 +271,7 @@ end
 
 
 function InsertImage(args, textData)
+  textData.needsNewTextElement = true
   local imageId = ImageLookup(args[2])
 
   local width = tonumber(args[3]) or textData.currentLineHeight
@@ -312,51 +307,68 @@ function RenderGlyph(letter, textData)
   local glyphSize = API.GetGlyphSize(letter, textData.currentFont, textData.currentSize)
   local glyphList = {}
 
-  if textData.isShadowed then
-    local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
-    bonusGlyph.x = textData.offsetX + xOffset + textData.shadowOffsetX
-    bonusGlyph.y = textData.offsetY + textData.shadowOffsetY
-    bonusGlyph.text = letter
-    bonusGlyph.fontSize = textData.currentSize
-    bonusGlyph:SetFont(textData.currentFont)
-    bonusGlyph:SetColor(Color[textData.shadowColor])
-    table.insert(glyphList, 1, bonusGlyph)
-  end
+  local newXOffset = 0
+  if textData.needsNewTextElement then
 
-  local glyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
-  glyph.x = textData.offsetX + xOffset
-  glyph.y = textData.offsetY
-  glyph.text = letter
-  glyph.fontSize = textData.currentSize
-  glyph:SetFont(textData.currentFont)
-  glyph:SetColor(textData.currentColor)
-  local newXOffset = xOffset + glyphSize.x
-  textData.currentLineHeight = math.max(textData.currentLineHeight, glyphSize.y)
+    if textData.isShadowed then
+      local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
+      bonusGlyph.x = textData.offsetX + xOffset + textData.shadowOffsetX
+      bonusGlyph.y = textData.offsetY + textData.shadowOffsetY
+      bonusGlyph.text = letter
+      bonusGlyph.fontSize = textData.currentSize
+      bonusGlyph:SetFont(textData.currentFont)
+      bonusGlyph:SetColor(Color[textData.shadowColor])
+      table.insert(glyphList, 1, bonusGlyph)
+    end
 
-  table.insert(glyphList, glyph)
+    local glyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
+    glyph.x = textData.offsetX + xOffset
+    glyph.y = textData.offsetY
+    glyph.text = letter
+    glyph.fontSize = textData.currentSize
+    glyph:SetFont(textData.currentFont)
+    glyph:SetColor(textData.currentColor)
+    newXOffset = xOffset + glyphSize.x
+    textData.currentLineHeight = math.max(textData.currentLineHeight, glyphSize.y)
 
-  if textData.isBold then
-      local offsetList = {
-        Vector2.New(-1, -1),
-        Vector2.New( 0, -1),
-        Vector2.New( 1, -1),
-        Vector2.New(-1,  0),
-        Vector2.New( 1,  0),
-        Vector2.New(-1,  1),
-        Vector2.New( 0,  1),
-        Vector2.New( 1,  1),
-      }
-      for k,v in pairs(offsetList) do
-        local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
-        bonusGlyph.x = glyph.x + v.x * textData.boldThickness
-        bonusGlyph.y = glyph.y + v.y * textData.boldThickness
-        bonusGlyph.text = letter
-        bonusGlyph.fontSize = textData.currentSize
-        bonusGlyph:SetFont(textData.currentFont)
-        bonusGlyph:SetColor(textData.currentColor)
-        table.insert(glyphList, bonusGlyph)
+    table.insert(glyphList, glyph)
+
+    if textData.isBold then
+        local offsetList = {
+          Vector2.New(-1, -1),
+          Vector2.New( 0, -1),
+          Vector2.New( 1, -1),
+          Vector2.New(-1,  0),
+          Vector2.New( 1,  0),
+          Vector2.New(-1,  1),
+          Vector2.New( 0,  1),
+          Vector2.New( 1,  1),
+        }
+        for k,v in pairs(offsetList) do
+          local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
+          bonusGlyph.x = glyph.x + v.x * textData.boldThickness
+          bonusGlyph.y = glyph.y + v.y * textData.boldThickness
+          bonusGlyph.text = letter
+          bonusGlyph.fontSize = textData.currentSize
+          bonusGlyph:SetFont(textData.currentFont)
+          bonusGlyph:SetColor(textData.currentColor)
+          table.insert(glyphList, bonusGlyph)
+        end
+    end
+  else -- needsNewTextElement is false
+    textData.currentLineHeight = math.max(textData.currentLineHeight, glyphSize.y)
+    newXOffset = xOffset + glyphSize.x
+
+    local newWordText = nil
+    for k,v in pairs(textData.currentWord) do
+      if v:IsA("UIText") then
+        if newWordText == nil then newWordText = v.text .. letter end
+        v.text = newWordText
+        v.width = newXOffset + 10
       end
+    end
   end
+  textData.needsNewTextElement = false
 
   textData.currentWordLength = newXOffset
   for k,v in pairs(glyphList) do
@@ -365,21 +377,6 @@ function RenderGlyph(letter, textData)
 end
 
 
-function TextAnimatorTask()
-  while true do
-    local expiredEntries = {}
-    for textField,data in pairs(textToAnimate) do
-      if Object.IsValid(textField) then
-
-
-      else
-        textToAnimate[k] = nil
-      end
-    end
-
-    Task.Wait()
-  end
-end
 
 function API.SetImageSource(obj)
   images = obj
@@ -389,7 +386,7 @@ end
 function ImageLookup(name)
   if images ~= nil then
     for k,v in pairs(images:GetCustomProperties()) do
-      if k:upper() == name:upper() then print("yay", v); return v end
+      if k:upper() == name:upper() then return v end
     end
   end
   return name
@@ -400,9 +397,10 @@ function AsColor(str)
   local r = tonumber(str:sub(2, 3), 16)
   local g = tonumber(str:sub(4, 5), 16)
   local b = tonumber(str:sub(6, 7), 16)
+  -- If they didn't provide an alpha, assume 100%
   local a = 255
   if str:len() > 7 then a = tonumber(str:sub(8, 9), 16)  end
-  print(r, g, b, a, str)
+  --print(r, g, b, a, str)
   return Color.New(r / 255, g / 255, b / 255, a / 255)
 end
 
