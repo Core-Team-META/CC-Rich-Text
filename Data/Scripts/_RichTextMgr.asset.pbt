@@ -28,6 +28,12 @@ Assets {
           Id: 17787962890442835663
         }
       }
+      Overrides {
+        Name: "cs:EmbeddedPanelTemplate"
+        AssetReference {
+          Id: 13068341514280202880
+        }
+      }
     }
   }
   SerializationVersion: 78
