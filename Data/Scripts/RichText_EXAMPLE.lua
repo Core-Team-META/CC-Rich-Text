@@ -42,5 +42,7 @@ We've decided that double cash weekend was not providing enough cash so now you 
 ]]
 
 rtm.SetImageSource(propImageDir)
-rtm.DisplayText(propTargetUIPanel, text, {leftMargin = 20, topMargin = 20, rightMargin = 20, size=30})
+--rtm.DisplayText(propTargetUIPanel, text, {leftMargin = 20, topMargin = 20, rightMargin = 20, size=30})
 --rtm.DisplayText(propTargetUIPanel, text2, {leftMargin = 20, topMargin = 20, rightMargin = 20, size=20})
+
+rtm.DisplayText(propTargetUIPanel, "hello <color red>world</color>", {leftMargin = 20, topMargin = 20, rightMargin = 20, size=30})

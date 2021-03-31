@@ -133,6 +133,7 @@ function API.DisplayText(panel, text, options)
     end
   end
   -- This forces the text to update the line.
+  FlushWord(textData)
   RenderGlyph(" ", textData, panel)
 
   dimensions.height = textData.currentY + textData.currentLineHeight + options.topMargin
