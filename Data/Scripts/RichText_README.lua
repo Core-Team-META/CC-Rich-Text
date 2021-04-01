@@ -18,5 +18,5 @@ See the RichText_Example for a demonstration of this!
 
 Full documentation and current source code can be found at:
 
-https://github.com/Core-Team-META/CC-RichText
+https://github.com/Core-Team-META/CC-Rich-Text
 ]]
