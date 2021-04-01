@@ -394,6 +394,7 @@ function ImageLookup(name)
 end
 
 function AsColor(str)
+  if Color[str] ~= nil then return Color[str] end
   if str == nil or str:sub(1, 1) ~= "#" then return nil end
   local r = tonumber(str:sub(2, 3), 16)
   local g = tonumber(str:sub(4, 5), 16)
