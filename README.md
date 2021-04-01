@@ -169,25 +169,25 @@ shadow's color.
 ### \<font fontName\>
 sets the typeface to the font name.
 
-###\</font\>
+### \</font\>
 Resets the font to the default.
 
-###\<size newSize\>
+### \<size newSize\>
 sets the font size.
 
-###\</size\>
+### \</size\>
 resets the typeface size to the default.
 
-###\<offset x y\>
+### \<offset x y\>
 Moves the text by x/y from where it would otherwise
 be rendered.  Use this to line up text, or make lines look jiggy.
 If only one number is provided, it is used as the Y value instead
 of the X.
 
-###\</offset\>
+### \</offset\>
 Resets the text offset to 0, 0
 
-###\<image imageName, width, height, color\>
+### \<image imageName, width, height, color\>
 Inserts an image into the text.  Width, height, and
 color are optional.
 
