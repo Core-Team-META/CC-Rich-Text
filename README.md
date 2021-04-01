@@ -4,13 +4,13 @@
 :---------:|:---------:
 |![TitleCard](/ReadmeImages/Header1.png)|![TitleCard](/ReadmeImages/Header2.png)|
 
-##Intro
+## Intro
 
 This is a library designed to make it easy to lay out complicated screens of text, with support for different colors, fonts, sizes, images, and
 other nice things that we're used to sticking in our documents.  Hopefully this should make it a lot easier to have the kinds of colorful,
 vibrant displays you want in games!
 
-##Quick Start
+## Quick Start
 
 Making it work is really simple:
 
@@ -210,8 +210,6 @@ of the panel.
 Color describes the background color of the panel.  If left blank, it will default to transparent black.  (#00000000)
 
 
-###\</panel\>
+### \</panel\>
 
 Indicates the end of a panel.
-
-]]
