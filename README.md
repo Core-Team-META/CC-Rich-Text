@@ -68,7 +68,8 @@ There are not many functions you have to worry about in this library.
 | *table* `options` | An optional table containing various optional parameters for the command. |
 
 This is the main function that you will use with this library. When this function is called, it parses the `text` argument, and
-creates a number of `UITextField` objects, as children of the `targetPanel` object.
+creates a number of `UITextField` objects, as children of the `targetPanel` object.  It returns a table with `width` and `height`
+properties, describing the dimensions of the rendered text.
 
 Note that the library does not handle any kind of cleanup! You are responsible for disposing of any created objects yourself.
 (either by deleting them directly, or by just removing the parent panel.)
