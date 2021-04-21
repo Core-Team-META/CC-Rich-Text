@@ -136,7 +136,7 @@ function API.DisplayText(panel, text, options)
   FlushWord(textData)
   RenderGlyph(" ", textData, panel)
 
-  dimensions.height = textData.currentY + textData.currentLineHeight + options.topMargin
+  dimensions.height = textData.currentY + textData.currentLineHeight + (options.topMargin or 0)
   return dimensions
 end
 
