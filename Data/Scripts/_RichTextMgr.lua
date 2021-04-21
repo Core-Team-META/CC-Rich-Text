@@ -107,8 +107,8 @@ function API.DisplayText(panel, text, options)
     needsNewTextElement = true,
   }
 
-
-  for c in basicText:gmatch(".") do
+  for _, code in utf8.codes(basicText) do
+    c = utf8.char(code)
     if c == " " or c == "\n" then
       if not textData.inSubPanel then
         FlushWord(textData)
@@ -139,7 +139,6 @@ function API.DisplayText(panel, text, options)
   dimensions.height = textData.currentY + textData.currentLineHeight + options.topMargin
   return dimensions
 end
-
 
 
 function HandleControlCode(textData)
