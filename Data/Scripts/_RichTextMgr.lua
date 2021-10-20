@@ -16,13 +16,15 @@ sizeCheckTextBox:SetColor(Color.New(0, 0, 0, 0))
 
 
 -- Todo- make this just grab the glyphs used in the string.
-function API.GetGlyphSize(glyph, font, size)
+function API.GetGlyphSize(glyph, font, size, outline, shadow)
   local SAMPLE_SIZE = 1
   local fontKey = TypefaceKey(font, size)
   if allFontData[fontKey] == nil then allFontData[fontKey] = {} end
   if allFontData[fontKey][glyph] ~= nil then return allFontData[fontKey][glyph] end
 
   sizeCheckTextBox:SetFont(font)
+  sizeCheckTextBox.outlineSize = outline
+  sizeCheckTextBox:SetShadowOffset(shadow)
   sizeCheckTextBox.fontSize = size
   sizeCheckTextBox.text = glyph:rep(SAMPLE_SIZE)
 
@@ -100,7 +102,10 @@ function API.DisplayText(panel, text, options)
     controlCodes = controlCodes,
     controlIndexes = controlIndexes,
     isBold = false,
-    isShadowed = false,
+    shadowOffset = Vector2.ZERO,
+    shadowColor = options.shadowColor or Color.BLACK,
+    outlineSize = 0,
+    outlineColor = options.outlineColor or Color.BLACK,
     offsetX = 0,
     offsetY = 0,
     inSubPanel = false,
@@ -115,13 +120,13 @@ function API.DisplayText(panel, text, options)
         if c == "\n" then
           textData.currentX = textData.leftMargin
           if textData.currentLineHeight == 0 then
-            textData.currentLineHeight = API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).y
+            textData.currentLineHeight = API.GetGlyphSize(" ", textData.currentFont, textData.currentSize, textData.outlineSize, textData.shadowOffset).y
           end
           textData.currentY = textData.currentY + textData.currentLineHeight
           textData.currentLineHeight = 0
         else
           textData.currentX = textData.currentX 
-              + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize).x
+              + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize, textData.outlineSize, textData.shadowOffset).x
         end
       end
     elseif c == subChar then
@@ -158,7 +163,7 @@ function HandleControlCode(textData)
       textData.needsNewTextElement = true
 
     if args[1] == "COLOR" then
-      textData.currentColor = Color[args[2]]
+      textData.currentColor = AsColor(args[2])
     elseif args[1] == "/COLOR" then
       textData.currentColor = textData.baseColor
     elseif args[1] == "FONT" then
@@ -188,12 +193,15 @@ function HandleControlCode(textData)
     elseif args[1] == "/B" then
       textData.isBold = false
     elseif args[1] == "SHADOW" then
-      textData.isShadowed = true
-      textData.shadowOffsetX = args[2] or 4
-      textData.shadowOffsetY = args[3] or 4
-      textData.shadowColor = args[4] or "BLACK"
+      textData.shadowOffset = Vector2.New(args[2] or 4, args[3] or 4)
+      textData.shadowColor = AsColor(args[4]) or "BLACK"
     elseif args[1] == "/SHADOW" then
-      textData.isShadowed = false
+      textData.shadowOffset = Vector2.ZERO
+    elseif args[1] == "OUTLINE" then
+      textData.outlineSize = args[2]
+      textData.outlineColor = AsColor(args[3])
+    elseif args[1] == "/OUTLINE" then
+      textData.outlineSize = 0
     elseif args[1] == "IMAGE" then
       InsertImage(args, textData)
     elseif args[1] == "PANEL" then
@@ -304,22 +312,11 @@ function RenderGlyph(letter, textData)
   if textData.inSubPanel then return end
 
   local xOffset = textData.currentWordLength
-  local glyphSize = API.GetGlyphSize(letter, textData.currentFont, textData.currentSize)
+  local glyphSize = API.GetGlyphSize(letter, textData.currentFont, textData.currentSize, textData.outlineSize, textData.shadowOffset)
   local glyphList = {}
 
   local newXOffset = 0
   if textData.needsNewTextElement then
-
-    if textData.isShadowed then
-      local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
-      bonusGlyph.x = textData.offsetX + xOffset + textData.shadowOffsetX
-      bonusGlyph.y = textData.offsetY + textData.shadowOffsetY
-      bonusGlyph.text = letter
-      bonusGlyph.fontSize = textData.currentSize
-      bonusGlyph:SetFont(textData.currentFont)
-      bonusGlyph:SetColor(Color[textData.shadowColor])
-      table.insert(glyphList, 1, bonusGlyph)
-    end
 
     local glyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
     glyph.x = textData.offsetX + xOffset
@@ -328,6 +325,10 @@ function RenderGlyph(letter, textData)
     glyph.fontSize = textData.currentSize
     glyph:SetFont(textData.currentFont)
     glyph:SetColor(textData.currentColor)
+    glyph.outlineSize = textData.outlineSize
+    glyph:SetOutlineColor(textData.outlineColor)
+    glyph:SetShadowOffset(textData.shadowOffset)
+    glyph:SetShadowColor(textData.shadowColor)
     newXOffset = xOffset + glyphSize.x
     textData.currentLineHeight = math.max(textData.currentLineHeight, glyphSize.y)
 
@@ -395,6 +396,9 @@ end
 function AsColor(str)
   if Color[str] ~= nil then return Color[str] end
   if str == nil or str:sub(1, 1) ~= "#" then return nil end
+  return Color.FromStandardHex(str)
+  --[[
+
   local r = tonumber(str:sub(2, 3), 16)
   local g = tonumber(str:sub(4, 5), 16)
   local b = tonumber(str:sub(6, 7), 16)
@@ -403,6 +407,7 @@ function AsColor(str)
   if str:len() > 7 then a = tonumber(str:sub(8, 9), 16)  end
   --print(r, g, b, a, str)
   return Color.New(r / 255, g / 255, b / 255, a / 255)
+  ]]
 end
 
 return API

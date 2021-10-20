@@ -61,7 +61,7 @@ We've decided that double cash weekend was not providing enough cash so now you 
 <image square -1 3 #FFFF00>
 <image staff 50 50><panel -1 #FFFFFF22>Staffs should be at least 13% sparklier after this most recent resparkling pass.</panel>
 
-
+This is a test of <outline 3 PINK>outline</outline> and <shadow -5 -5 YELLOW>shadowed</shadow> text
 
 ]]
 
