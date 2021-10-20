@@ -174,10 +174,15 @@ Makes the text not bold.
 
 ### `<shadow x y color>`
 
-Draws a dropshadow.x, y, and color are optional.
+Draws a dropshadow.  x, y, and color are optional.
 
 If provided, x and y are the offset for the shadow, and color is the
 shadow's color.
+
+### `<outline size color>`
+
+Draws an outline around the letters, with a width equal to size, and in
+the color provided.  All arguments are optional.
 
 ### `<font fontName>`
 
