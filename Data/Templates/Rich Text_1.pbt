@@ -40,7 +40,7 @@ Assets {
     Id: "61f6859ab09548a0bf2c5d96b1348e10"
     OwnerAccountId: "ef18f7661bf14d0eae60d7f31ea769af"
     OwnerName: "TeamMETA"
-    Description: "Create fancy text fields with markup!\r\n\r\nSupports a bunch of cool stuff:\r\n\r\n* Colors\r\n* Fonts\r\n* Text Size\r\n* Bold text\r\n* Drop Shadows\r\n* Embedded Images\r\n\r\nAnd more!\r\n\r\nFull code + documentation available at https://github.com/Core-Team-META/CC-Rich-Text\r\n"
+    Description: "Create fancy text fields with markup!\r\n\r\nSupports a bunch of cool stuff:\r\n\r\n* Colors\r\n* Fonts\r\n* Text Size\r\n* Bold text\r\n* Drop Shadows\r\n* Embedded Images\r\n* Unicode characters!\r\n\r\nAnd more!\r\n\r\nFull code + documentation available at https://github.com/Core-Team-META/CC-Rich-Text\r\n"
   }
-  SerializationVersion: 81
+  SerializationVersion: 100
 }
