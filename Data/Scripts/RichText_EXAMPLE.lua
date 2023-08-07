@@ -76,4 +76,3 @@ propTargetUIPanel.height = dims.height
 
 local player = Game.GetLocalPlayer()
 player.lookSensitivity = 0
-

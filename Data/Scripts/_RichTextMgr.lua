@@ -48,6 +48,9 @@ function API.DisplayText(panel, text, options)
     width = panel.width,
     height = -1,
   }
+
+  API.ClearText(panel)
+
   if options == nil then options = {} end
   --local subChar = "_"
   local subChar = "\a"
@@ -306,6 +309,8 @@ function InsertPanelStart(args, textData)
 
   newPanel.x = textData.offsetX + xOffset
   newPanel.y = textData.offsetY
+  newPanel.clientUserData.isText = true
+
 
   newPanel.width = width
   local remainingText = textData.rawText:sub(textData.controlIndexes[textData.codeIndex - 1].matchEnd + 1)
@@ -341,6 +346,7 @@ function InsertImage(args, textData)
 
   img.width = width
   img.height = height
+  img.clientUserData.isText = true
 
   img:SetImage(imageId)
   img:SetColor(imgColor)
@@ -366,6 +372,7 @@ function RenderGlyph(letter, textData)
   if textData.needsNewTextElement then
 
     local glyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
+    glyph.clientUserData.isText = true
     glyph.x = textData.offsetX + xOffset
     glyph.y = textData.offsetY
     glyph.text = letter
@@ -394,6 +401,7 @@ function RenderGlyph(letter, textData)
         }
         for k,v in pairs(offsetList) do
           local bonusGlyph = World.SpawnAsset(propGlyphTemplate, {parent = textData.targetPanel})
+          bonusGlyph.clientUserData.isText = true
           bonusGlyph.x = glyph.x + v.x * textData.boldThickness
           bonusGlyph.y = glyph.y + v.y * textData.boldThickness
           bonusGlyph.text = letter
@@ -430,6 +438,14 @@ end
 
 function API.SetImageSource(obj)
   images = obj
+end
+
+function API.ClearText(panel)
+  for k,v in pairs(panel:GetChildren()) do
+    if v.clientUserData.isText then
+      v:Destroy()
+    end
+  end
 end
 
 
