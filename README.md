@@ -211,6 +211,11 @@ of the X.
 
 Resets the text offset to 0, 0.
 
+### `<justify justification>`
+Set the text justification.  Can be either `left`, `right`, or `center`.
+
+Only lasts until the end of the current paragraph.
+
 ### `<image imageName, width, height, color>`
 
 Inserts an image into the text.Width, height, and
