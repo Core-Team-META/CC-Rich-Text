@@ -88,6 +88,8 @@ function API.DisplayText(panel, text, options)
     maxY = maxY,
     currentWord = {},
     currentWordLength = 0,
+    currentLine = {},
+    currentLineLength = 0,
     baseFont = baseFont,
     baseSize = baseSize,
     baseColor = options.color or Color.WHITE,
@@ -110,7 +112,9 @@ function API.DisplayText(panel, text, options)
     offsetY = 0,
     inSubPanel = false,
     needsNewTextElement = true,
+    justify = options.justify or "left"
   }
+  textData.justify = string.lower(textData.justify)
 
   for _, code in utf8.codes(basicText) do
     c = utf8.char(code)
@@ -118,6 +122,7 @@ function API.DisplayText(panel, text, options)
       if not textData.inSubPanel then
         FlushWord(textData)
         if c == "\n" then
+          EndOfLine(textData)
           textData.currentX = textData.leftMargin
           if textData.currentLineHeight == 0 then
             textData.currentLineHeight = API.GetGlyphSize(" ", textData.currentFont, textData.currentSize, textData.outlineSize, textData.shadowOffset).y
@@ -140,6 +145,7 @@ function API.DisplayText(panel, text, options)
   -- This forces the text to update the line.
   FlushWord(textData)
   RenderGlyph(" ", textData, panel)
+  EndOfLine(textData)
 
   dimensions.height = textData.currentY + textData.currentLineHeight + (options.topMargin or 0)
   return dimensions
@@ -209,11 +215,42 @@ function HandleControlCode(textData)
     elseif args[1] == "/PANEL" then
       FlushWord(textData)
       textData.timeToStop = true
+    elseif args[1] == "JUSTIFY" then
+      textData.justify = string.lower(args[2])
+      if textData.justify ~= "left" and
+          textData.justify ~= "right" and
+          textData.justify ~= "center" then
+        warn("Unknown justification:" .. textData.justify)
+        textData.justify = "left"
+      end
     else
       warn("Unknown text code: " .. args[1])
     end
   end
 end
+
+
+function EndOfLine(textData)
+  local lineOffset = 0
+  if textData.justify == "left" then
+    -- nothing, we stay at 0
+  elseif textData.justify == "right" then
+    lineOffset = textData.maxX - textData.currentX
+  elseif textData.justify == "center" then
+    lineOffset = (textData.maxX - textData.currentX) / 2
+  else
+    print("Unknown justification:", textData.justify)
+  end
+
+  for k,v in pairs(textData.currentLine) do
+    v.x = v.x + lineOffset
+  end
+
+  textData.currentLine = {}
+
+  return lineOffset
+end
+
 
 
 -- helper function for flushing words.
@@ -224,6 +261,15 @@ function FlushWord(textData)
 
   local newLine = false
   if textData.currentX + textData.currentWordLength > textData.maxX then
+    local lineOffset = EndOfLine(textData)
+    for k,v in pairs(textData.currentWord) do
+      table.insert(textData.currentLine, v)
+      -- This is a hack - because of how flush word and endofline work,
+      -- the first word on the new line has already been shifted, so we need to shift
+      -- it back, so that it can be handled propperly by the next line.
+      v.x = v.x - lineOffset
+    end
+
     textData.currentX = textData.leftMargin
     textData.currentY = textData.currentY + textData.currentLineHeight
     textData.currentLineHeight = 0
@@ -303,6 +349,7 @@ function InsertImage(args, textData)
   textData.currentWordLength = xOffset + width
 
   table.insert(textData.currentWord, img)
+  table.insert(textData.currentLine, img)
 end
 
 
@@ -356,6 +403,7 @@ function RenderGlyph(letter, textData)
           table.insert(glyphList, bonusGlyph)
         end
     end
+
   else -- needsNewTextElement is false
     textData.currentLineHeight = math.max(textData.currentLineHeight, glyphSize.y)
     newXOffset = xOffset + glyphSize.x
@@ -374,6 +422,7 @@ function RenderGlyph(letter, textData)
   textData.currentWordLength = newXOffset
   for k,v in pairs(glyphList) do
     table.insert(textData.currentWord, v)
+    table.insert(textData.currentLine, v)
   end
 end
 

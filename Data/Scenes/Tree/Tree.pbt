@@ -34,6 +34,10 @@ Objects {
   }
   Folder {
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 6930738628902831820
@@ -66,6 +70,10 @@ Objects {
       Id: 3460966924112622059
     }
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 6500602983929483887
@@ -104,10 +112,25 @@ Objects {
         }
       }
     }
+    ParameterOverrideMap {
+      key: 9681024375400041694
+      value {
+        Overrides {
+          Name: "Visible"
+          Enum {
+            Value: "mc:evisibilitysetting:forceon"
+          }
+        }
+      }
+    }
     TemplateAsset {
       Id: 3070533406422330127
     }
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 14982843161775482339
@@ -151,6 +174,13 @@ Objects {
       BoundsScale: 1
     }
   }
+  Relevance {
+    Value: "mc:edistancerelevance:critical"
+  }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 10005074784157121906
@@ -185,6 +215,10 @@ Objects {
   Folder {
     IsGroup: true
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 10505154200474359396
@@ -287,6 +321,13 @@ Objects {
       Id: 16910278292812118833
     }
   }
+  Relevance {
+    Value: "mc:edistancerelevance:critical"
+  }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 7155168770677928712
@@ -369,6 +410,13 @@ Objects {
       Id: 11515840070784317904
     }
   }
+  Relevance {
+    Value: "mc:edistancerelevance:critical"
+  }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 13551641546322277000
@@ -502,6 +550,13 @@ Objects {
       Id: 7887238662729938253
     }
   }
+  Relevance {
+    Value: "mc:edistancerelevance:critical"
+  }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 14713340454944924967
@@ -530,6 +585,10 @@ Objects {
   Folder {
     IsGroup: true
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 724324913679364851
@@ -559,7 +618,32 @@ Objects {
     Value: "mc:ecollisionsetting:inheritfromparent"
   }
   NetworkContext {
+    MinDetailLevel {
+      Value: "mc:edetaillevel:low"
+    }
+    MaxDetailLevel {
+      Value: "mc:edetaillevel:ultra"
+    }
+    IsAllowedForPC: true
+    IsAllowedForMobile: true
+    IsAllowedForLowMemoryMobile: true
+    PCMinDetailLevel {
+      Value: "mc:edetaillevel:low"
+    }
+    PCMaxDetailLevel {
+      Value: "mc:edetaillevel:ultra"
+    }
+    MobileMinDetailLevel {
+      Value: "mc:edetaillevel:low"
+    }
+    MobileMaxDetailLevel {
+      Value: "mc:edetaillevel:ultra"
+    }
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 3567959178173361743
@@ -608,7 +692,12 @@ Objects {
     MaxPitch: 89
     DoesPositionOffsetSpring: true
     UseAsAudioListener: true
+    IsCameraCollisionEnabled: true
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 4226120016796708080
@@ -688,8 +777,13 @@ Objects {
       IsMountEnabled: true
       MaxHitpoints: 100
       PlayerMasterVolumeMultiplier: 1
+      ComplexCollision: true
     }
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 16813558807825262224
@@ -721,7 +815,13 @@ Objects {
   PlayerSpawnPoint {
     TeamInt: 1
     PlayerScaleMultiplier: 1
+    SpawnEffectsTemplate {
+    }
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }
 Objects {
   Id: 7367735074338159388
@@ -784,6 +884,14 @@ Objects {
         }
       }
       RelevanceSettings {
+        key: "smartobject"
+        value {
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      RelevanceSettings {
         key: "vfx"
         value {
           LowDistance: 4500
@@ -820,12 +928,90 @@ Objects {
         VoiceChatEntryVerticalFlow {
           Value: "mc:ecoreverticalflow:toptobottom"
         }
+        IsVoiceChatWidgetVisible: true
       }
       PlayerInteractDistance: 500
       PlayerInteractAngleDeg: 50
       PlayerStorageMode {
         Value: "mc:eplayerstoragemode:none"
       }
+      EnableNetworkedEventsQueuing: true
+      PCDistanceRelevanceSettings {
+        key: "light"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      PCDistanceRelevanceSettings {
+        key: "mergedmesh"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      PCDistanceRelevanceSettings {
+        key: "mesh"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      PCDistanceRelevanceSettings {
+        key: "smartobject"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      MobileDistanceRelevanceSettings {
+        key: "light"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      MobileDistanceRelevanceSettings {
+        key: "mergedmesh"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      MobileDistanceRelevanceSettings {
+        key: "mesh"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
+      MobileDistanceRelevanceSettings {
+        key: "smartobject"
+        value {
+          VeryLowDistance: 2000
+          LowDistance: 4500
+          MediumDistance: 7000
+          HighDistance: 9000
+        }
+      }
     }
   }
+  NetworkRelevanceDistance {
+    Value: "mc:eproxyrelevance:critical"
+  }
+  IsReplicationEnabledByDefault: true
 }

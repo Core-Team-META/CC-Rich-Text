@@ -30,7 +30,32 @@ Assets {
           Value: "mc:ecollisionsetting:forceoff"
         }
         NetworkContext {
+          MinDetailLevel {
+            Value: "mc:edetaillevel:low"
+          }
+          MaxDetailLevel {
+            Value: "mc:edetaillevel:ultra"
+          }
+          IsAllowedForPC: true
+          IsAllowedForMobile: true
+          IsAllowedForLowMemoryMobile: true
+          PCMinDetailLevel {
+            Value: "mc:edetaillevel:low"
+          }
+          PCMaxDetailLevel {
+            Value: "mc:edetaillevel:ultra"
+          }
+          MobileMinDetailLevel {
+            Value: "mc:edetaillevel:low"
+          }
+          MobileMaxDetailLevel {
+            Value: "mc:edetaillevel:ultra"
+          }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 2931310664181792077
@@ -76,6 +101,7 @@ Assets {
             TwoSided: true
             TickWhenOffScreen: true
             RedrawTime: 30
+            UseSafeZoneAdjustment: true
           }
           AnchorLayout {
             SelfAnchor {
@@ -90,6 +116,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 11078879633985881013
@@ -136,6 +166,8 @@ Assets {
           }
           Panel {
             Opacity: 1
+            OpacityMaskBrush {
+            }
           }
           AnchorLayout {
             SelfAnchor {
@@ -150,6 +182,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 13630842651758069362
@@ -207,6 +243,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 9878753781673932226
@@ -268,6 +308,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 4493518818899862469
@@ -324,6 +368,10 @@ Assets {
             Id: 5397137188652304228
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 4397176299007657185
@@ -384,6 +432,10 @@ Assets {
         Folder {
           IsGroup: true
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 9681024375400041694
@@ -429,6 +481,7 @@ Assets {
             TwoSided: true
             TickWhenOffScreen: true
             RedrawTime: 30
+            UseSafeZoneAdjustment: true
           }
           AnchorLayout {
             SelfAnchor {
@@ -443,6 +496,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 3584855351537004974
@@ -482,6 +539,7 @@ Assets {
             Orientation {
               Value: "mc:eorientation:orient_vertical"
             }
+            IsInteractable: true
           }
           AnchorLayout {
             SelfAnchor {
@@ -496,6 +554,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 7581520693908032929
@@ -541,6 +603,8 @@ Assets {
           }
           Panel {
             Opacity: 1
+            OpacityMaskBrush {
+            }
           }
           AnchorLayout {
             SelfAnchor {
@@ -555,6 +619,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 8362588096686742022
@@ -612,6 +680,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 14978005990900288814
@@ -673,6 +745,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
     }
     Assets {
@@ -743,6 +819,6 @@ Assets {
       AssetId: "None"
     }
   }
-  SerializationVersion: 100
+  SerializationVersion: 125
   DirectlyPublished: true
 }

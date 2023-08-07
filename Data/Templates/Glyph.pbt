@@ -63,6 +63,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
     }
     PrimaryAssetId {
@@ -70,5 +74,5 @@ Assets {
       AssetId: "None"
     }
   }
-  SerializationVersion: 100
+  SerializationVersion: 125
 }

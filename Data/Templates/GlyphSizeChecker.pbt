@@ -53,6 +53,7 @@ Assets {
             TwoSided: true
             TickWhenOffScreen: true
             RedrawTime: 30
+            UseSafeZoneAdjustment: true
           }
           AnchorLayout {
             SelfAnchor {
@@ -67,6 +68,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
       Objects {
         Id: 3788334996692691450
@@ -126,6 +131,10 @@ Assets {
             }
           }
         }
+        NetworkRelevanceDistance {
+          Value: "mc:eproxyrelevance:critical"
+        }
+        IsReplicationEnabledByDefault: true
       }
     }
     PrimaryAssetId {
@@ -133,5 +142,5 @@ Assets {
       AssetId: "None"
     }
   }
-  SerializationVersion: 100
+  SerializationVersion: 125
 }
