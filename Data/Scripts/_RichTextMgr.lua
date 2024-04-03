@@ -5,7 +5,7 @@ local propEmbeddedImageTemplate = script:GetCustomProperty("EmbeddedImageTemplat
 local propEmbeddedPanelTemplate = script:GetCustomProperty("EmbeddedPanelTemplate")
 
 local fonts = require(prop_FontLookup)
-local images = nil
+local imageList = {}
 
 local API = {}
 local allFontData = {}
@@ -437,8 +437,21 @@ end
 
 
 function API.SetImageSource(obj)
-  images = obj
+  warn("RichText.SetImageSource is deprecated.  Use AddImageSource instead.")
+  API.ClearImageSources()
+  API.AddImageSource(obj)
 end
+
+function API.ClearImageSources()
+  imageList = {}
+end
+
+function API.AddImageSource(obj)
+  for k,v in pairs(obj:GetCustomProperties()) do
+    imageList[k:upper()] = v
+  end
+end
+
 
 function API.ClearText(panel)
   for k,v in pairs(panel:GetChildren()) do
@@ -450,12 +463,12 @@ end
 
 
 function ImageLookup(name)
-  if images ~= nil then
-    for k,v in pairs(images:GetCustomProperties()) do
-      if k:upper() == name:upper() then return v end
-    end
+  local result = imageList[name:upper()]
+  if result ~= nil then
+    return result
+  else
+    return name
   end
-  return name
 end
 
 function AsColor(str)
