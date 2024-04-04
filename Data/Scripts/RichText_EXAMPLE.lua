@@ -3,6 +3,7 @@ local propTargetUIPanel = script:GetCustomProperty("TargetUIPanel"):WaitForObjec
 local propImage = script:GetCustomProperty("image")
 local propImageDir = script:GetCustomProperty("ImageDir"):WaitForObject()
 local propUIPanel = script:GetCustomProperty("UIPanel"):WaitForObject()
+local propVerticalAlignPanel = script:GetCustomProperty("AnotherPanel"):WaitForObject()
 
 
 local rtm = require(prop_RichTextMgr)
@@ -71,6 +72,11 @@ rtm.DisplayText(propUIPanel, text, {leftMargin = 20, topMargin = 20, rightMargin
 
 local dims = rtm.DisplayText(propTargetUIPanel, text2, {leftMargin = 20, topMargin = 20, rightMargin = 20, size=20})
 propTargetUIPanel.height = dims.height
+
+
+
+rtm.DisplayText(propVerticalAlignPanel, "Hello world\nargleblargle\ndfdf", {vJustify = "center", justify = "center"})
+
 
 
 

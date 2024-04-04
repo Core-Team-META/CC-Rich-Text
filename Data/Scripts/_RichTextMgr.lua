@@ -92,6 +92,7 @@ function API.DisplayText(panel, text, options)
     currentWord = {},
     currentWordLength = 0,
     currentLine = {},
+    allElements = {},
     currentLineLength = 0,
     baseFont = baseFont,
     baseSize = baseSize,
@@ -100,6 +101,7 @@ function API.DisplayText(panel, text, options)
     currentSize = baseSize,
     currentColor = options.color or Color.WHITE,
     currentLineHeight = 0,
+    totalHeight = 0,
     leftMargin = options.leftMargin or 0,
     currentX = options.leftMargin or 0,
     currentY = options.topMargin or 0,
@@ -115,7 +117,8 @@ function API.DisplayText(panel, text, options)
     offsetY = 0,
     inSubPanel = false,
     needsNewTextElement = true,
-    justify = options.justify or "left"
+    justify = options.justify or "left",
+    vJustify = options.vJustify or "top"
   }
   textData.justify = string.lower(textData.justify)
 
@@ -126,12 +129,6 @@ function API.DisplayText(panel, text, options)
         FlushWord(textData)
         if c == "\n" then
           EndOfLine(textData)
-          textData.currentX = textData.leftMargin
-          if textData.currentLineHeight == 0 then
-            textData.currentLineHeight = API.GetGlyphSize(" ", textData.currentFont, textData.currentSize, textData.outlineSize, textData.shadowOffset).y
-          end
-          textData.currentY = textData.currentY + textData.currentLineHeight
-          textData.currentLineHeight = 0
         else
           textData.currentX = textData.currentX 
               + API.GetGlyphSize(" ", textData.currentFont, textData.currentSize, textData.outlineSize, textData.shadowOffset).x
@@ -149,6 +146,24 @@ function API.DisplayText(panel, text, options)
   FlushWord(textData)
   RenderGlyph(" ", textData, panel)
   EndOfLine(textData)
+
+
+  --Vertical centering:
+  local vOffset = 0
+  if textData.vJustify == "top" then
+    --nothing, we're fine
+  elseif textData.vJustify == "center" then
+    vOffset = (textData.maxY - textData.totalHeight) / 2
+    print(textData.maxY, textData.totalHeight, vOffset)
+  elseif textData.vJustify == "bottom" then
+    vOffset = (textData.maxY - textData.totalHeight)
+  end
+  for k,v in pairs(textData.allElements) do
+    v.y = v.y + vOffset
+  end
+  textData.allElements = {}
+  
+
 
   dimensions.height = textData.currentY + textData.currentLineHeight + (options.topMargin or 0)
   return dimensions
@@ -226,6 +241,14 @@ function HandleControlCode(textData)
         warn("Unknown justification:" .. textData.justify)
         textData.justify = "left"
       end
+    elseif args[1] == "VJUSTIFY" then
+      textData.vJustify = string.lower(args[2])
+      if textData.vJustify ~= "top" and
+          textData.vJustify ~= "bottom" and
+          textData.vJustify ~= "center" then
+        warn("Unknown justification:" .. textData.vJustify)
+        textData.vJustify = "top"
+      end
     else
       warn("Unknown text code: " .. args[1])
     end
@@ -247,9 +270,18 @@ function EndOfLine(textData)
 
   for k,v in pairs(textData.currentLine) do
     v.x = v.x + lineOffset
+    table.insert(textData.allElements, v)
   end
 
   textData.currentLine = {}
+
+  textData.currentX = textData.leftMargin
+  if textData.currentLineHeight == 0 then
+    textData.currentLineHeight = API.GetGlyphSize(" ", textData.currentFont, textData.currentSize, textData.outlineSize, textData.shadowOffset).y
+  end
+  textData.currentY = textData.currentY + textData.currentLineHeight
+  textData.totalHeight = textData.totalHeight + textData.currentLineHeight
+  textData.currentLineHeight = 0  
 
   return lineOffset
 end
