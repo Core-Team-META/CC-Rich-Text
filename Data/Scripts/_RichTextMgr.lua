@@ -147,14 +147,12 @@ function API.DisplayText(panel, text, options)
   RenderGlyph(" ", textData, panel)
   EndOfLine(textData)
 
-
   --Vertical centering:
   local vOffset = 0
   if textData.vJustify == "top" then
     --nothing, we're fine
   elseif textData.vJustify == "center" then
     vOffset = (textData.maxY - textData.totalHeight) / 2
-    print(textData.maxY, textData.totalHeight, vOffset)
   elseif textData.vJustify == "bottom" then
     vOffset = (textData.maxY - textData.totalHeight)
   end
@@ -162,8 +160,6 @@ function API.DisplayText(panel, text, options)
     v.y = v.y + vOffset
   end
   textData.allElements = {}
-  
-
 
   dimensions.height = textData.currentY + textData.currentLineHeight + (options.topMargin or 0)
   return dimensions
@@ -228,6 +224,8 @@ function HandleControlCode(textData)
       textData.outlineSize = 0
     elseif args[1] == "IMAGE" then
       InsertImage(args, textData)
+    elseif args[1] == "TEMPLATE" then
+      InsertTemplate(args, textData)
     elseif args[1] == "PANEL" then
       InsertPanelStart(args, textData)
     elseif args[1] == "/PANEL" then
@@ -281,7 +279,7 @@ function EndOfLine(textData)
   end
   textData.currentY = textData.currentY + textData.currentLineHeight
   textData.totalHeight = textData.totalHeight + textData.currentLineHeight
-  textData.currentLineHeight = 0  
+  textData.currentLineHeight = 0
 
   return lineOffset
 end
@@ -358,6 +356,36 @@ function InsertPanelStart(args, textData)
   textData.inSubPanel = true
 end
 
+function InsertTemplate(args, textData)
+  local width = tonumber(args[3]) or textData.currentLineHeight
+  if width == -1 then width = textData.maxX - textData.leftMargin - 1 end
+  local height = tonumber(args[4]) or width
+
+  local xOffset = textData.currentWordLength
+  local object = World.SpawnAsset(args[2], {parent = textData.targetPanel})
+
+  if not object:IsA("UIControl") then
+    warn("Provided template ID (" .. args[2] .. ") does not point to a UI control.")
+    object:Destroy()
+    return
+  end
+
+  textData.needsNewTextElement = true
+
+  object.x = textData.offsetX + xOffset
+  object.y = textData.offsetY
+
+  object.width = width
+  object.height = height
+  object.clientUserData.isText = true
+
+  --print(imageId)
+  textData.currentLineHeight = math.max(textData.currentLineHeight, height)
+  textData.currentWordLength = xOffset + width
+
+  table.insert(textData.currentWord, object)
+  table.insert(textData.currentLine, object)
+end
 
 
 
