@@ -136,6 +136,7 @@ function API.DisplayText(panel, text, options)
       end
     elseif c == subChar then
       HandleControlCode(textData)
+      FlushWord(textData)
       if textData.timeToStop then break end
     else
       -- regular letter.  Add to the current word.
